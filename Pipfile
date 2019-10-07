@@ -16,6 +16,7 @@ gunicorn = "*"
 eventlet = "*"
 black = "*"
 pytest = "*"
+flask-restplus = "*"
 
 [requires]
 python_version = "3.6"

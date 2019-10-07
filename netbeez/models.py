@@ -41,8 +41,8 @@ class User_Account(BaseMixin, db.Model):
         return "<User_Account %r>" % self.__dict__
 
 
-class Data(BaseMixin, db.Model):
-    __tablename__ = "data"
+class Data_Stream(BaseMixin, db.Model):
+    __tablename__ = "data_stream"
     id = db.Column(db.Integer, primary_key=True, unique=True)
     key = db.Column(db.String(), nullable=False)
     value = db.Column(db.String(), nullable=False)
