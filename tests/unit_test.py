@@ -14,4 +14,5 @@ class TestDefault(BaseTest):
 class TestSocketIO(BaseTest):
     def test_connect(self):
         client = socketio.test_client(app)
+        print(client)
         pass
