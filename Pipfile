@@ -8,6 +8,11 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-socketio = "*"
+flask-sqlalchemy = "*"
+sqlalchemy = "*"
+flask-migrate = "*"
+psycopg2-binary = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

@@ -23,10 +23,10 @@ fix-subdependencies:
 	pipenv lock --pre --clear
 
 lint:
-	pipenv run black ./NetBeez ./tests
+	pipenv run black ./netbeez ./tests
 
 local-server:
-	pipenv run gunicorn NetBeez:app --bind 0.0.0.0:8000
+	pipenv run gunicorn netbeez:app --bind 0.0.0.0:8000
 
 tests:
 	pipenv run black --check ./NetBeez ./tests
