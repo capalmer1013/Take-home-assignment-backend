@@ -16,8 +16,9 @@ def test_disconnect():
     print("Client disconnected")
 
 
-@socketio.on("message")
-def handle_message(message):
+@socketio.on("stream_data")
+def handle_data(message):
+    # expects json with {id: userId, <key>: value}
     send(message)
 
 

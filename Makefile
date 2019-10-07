@@ -29,6 +29,6 @@ local-server:
 	pipenv run gunicorn netbeez:app --bind 0.0.0.0:8000
 
 tests:
-	pipenv run black --check ./NetBeez ./tests
+	pipenv run black --check ./netbeez ./tests
 	TESTING=1 pipenv run pytest -s --disable-warnings tests/unit_test.py
 

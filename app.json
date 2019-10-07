@@ -1,0 +1,14 @@
+{
+  "buildpacks": [
+  { "url": "heroku/python" }
+  ],
+  "environments": {
+    "test": {
+      "addons": ["heroku-postgresql:in-dyno"],
+      "scripts": {
+        "test-setup": "cd tests && ln -s ../netbeez netbeez && cd ../ && make db-upgrade",
+        "test": "make tests"
+      }
+    }
+  }
+}
