@@ -1,8 +1,7 @@
 from flask_socketio import SocketIO
 from netbeez import app, models
+from netbeez.api import socketio
 from .test import BaseTest
-
-socketio = SocketIO(app)
 
 
 class TestDefault(BaseTest):
@@ -14,5 +13,8 @@ class TestDefault(BaseTest):
 class TestSocketIO(BaseTest):
     def test_connect(self):
         client = socketio.test_client(app)
-        print(client)
+        client.connect()
+        client.get_received()  # clear buffer
+        client.send({"key": "value"}, json=True)
+        print(client.get_received())
         pass

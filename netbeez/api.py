@@ -38,6 +38,7 @@ class BaseEndpoint(Resource):
 
 @socketio.on("connect")
 def test_connect():
+    print("connected")
     emit("my response", {"data": "Connected"})
 
 
@@ -46,8 +47,9 @@ def test_disconnect():
     print("Client disconnected")
 
 
-@socketio.on("stream_data")
+@socketio.on("json")
 def handle_data(message):
+    print("stream data", message)
     # expects json with {id: userId, <key>: value}
     send(message)
 
