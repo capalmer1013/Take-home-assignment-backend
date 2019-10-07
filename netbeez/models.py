@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
+
 class BaseMixin(object):
     created_at = db.Column(
         db.DateTime(timezone=True), nullable=False, server_default=func.now()
