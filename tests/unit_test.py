@@ -1,6 +1,4 @@
-from flask_socketio import SocketIO
 from netbeez import app, models
-from netbeez.api import socketio
 from .test import BaseTest
 
 
@@ -11,20 +9,32 @@ class TestDefault(BaseTest):
 
 
 class TestSocketIO(BaseTest):
-    def test_connect(self):
-        client = socketio.test_client(app)
-        client.connect()
-        client.get_received()  # clear buffer
-        client.send({"key": "value"}, json=True)
-        result = client.get_received()[0]["args"]
-        assert "error" in result
+    def test_sendingValues(self):
+        self.client.send({"key": "value"}, json=True)
+        result = self.client.get_received()
+        assert "error" in result[0]["args"]
         # create user
         with app.app_context():
-            user = models.User_Account.create()
-        print(user.id)
+            user_id = models.User_Account.create().id
         # send a value for them
-        # make sure it gets set
-        values = {"id", "sensor_type", "sensor_name", "value"}
+        values = {
+            "id": user_id,
+            "sensor_type": "electricity_w",
+            "sensor_name": "elec1",
+            "value": 1.5,
+        }
+        self.client.send(values, json=True)
 
+        # make sure it gets set
+        result = self.app.get("/users/" + str(user_id))
+        assert result.status_code == 200
+        json_result = self.json_filter(result)
+        assert len(json_result) == 1
+        result = self.client.get_received()
+        assert len(result) == 0
         # send values for invalid userid
+        values["id"] += 1
         # make sure it's an error
+        self.client.send(values, json=True)
+        result = self.client.get_received()
+        assert "error" in result[0]["args"]

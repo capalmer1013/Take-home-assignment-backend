@@ -48,5 +48,7 @@ class User_Account(BaseMixin, db.Model):
 class Data_Stream(BaseMixin, db.Model):
     __tablename__ = "data_stream"
     id = db.Column(db.Integer, primary_key=True, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_account.id"))
+    user = db.relationship("User_Account", foreign_keys=[user_id], lazy="joined")
     key = db.Column(db.String(), nullable=False)
     value = db.Column(db.String(), nullable=False)
