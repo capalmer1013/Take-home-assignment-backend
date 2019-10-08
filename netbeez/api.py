@@ -45,10 +45,16 @@ class UsersEndpoints(Resource):
 @api.route("/users/<userid>")
 class UserDetailsEndpoints(Resource):
     def get(self, userid):
-        return [
-            {"key": x.key, "value": x.value}
-            for x in models.Data_Stream.query.filter_by(user_id=userid).all()
-        ]
+        result = {}
+        q = models.Data_Stream.query.filter_by(user_id=userid).all()
+        for each in q:
+            if each.key not in result:
+                result[each.key] = {"x": [], "y": []}
+
+            result[each.key]["x"].append(each.timestamp)
+            result[each.key]["y"].append(each.value)
+
+        return [{"label": each, "x": result[each]["x"], "y": result[each]["y"]} for each in result]
 
 
 # socketio stuff
