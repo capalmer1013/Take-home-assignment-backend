@@ -3,10 +3,12 @@ import time
 from flask import Flask, render_template
 from flask_restplus import Resource, Api, fields, reqparse
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from flask_cors import CORS
 
 from . import models, exceptions, utils
 
 app = Flask(__name__)
+CORS(app, expose_headers=["X-Authentication-JWT"])
 socketio = SocketIO(app)
 api = Api(app, title="NetBeez Application API")
 
