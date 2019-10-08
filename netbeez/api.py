@@ -47,11 +47,29 @@ def test_disconnect():
     print("Client disconnected")
 
 
+@socketio.on_error_default
+def error_handler(e):
+    # print("An error has occurred: " + str(e))
+    send({"error": e.error})
+
+
 @socketio.on("json")
 def handle_data(message):
-    print("stream data", message)
-    # expects json with {id: userId, <key>: value}
-    send(message)
+    # print("stream data", message)
+    # sensor types are [electricity, temperature_f, motion, smoke, CO2]
+    # expects json with {id: userId, sensor_type: temperature_f, sensor_name: "temp_1", value: 68}
+    expectedFields = ["id", "sensor_type", "sensor_name", "value"]
+    # print(message)
+    valid_request = True
+    for key in expectedFields:
+        if key not in message:
+            valid_request = False
+
+    if not valid_request:
+        raise exceptions.BadRequestError(
+            error="Must have id, sensor_type, sensor_name, value fields."
+        )
+    # send(message)
 
 
 if __name__ == "__main__":

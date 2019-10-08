@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+from sqlalchemy.dialects import postgresql
+
+import uuid
 
 db = SQLAlchemy()
 
@@ -35,7 +38,8 @@ class BaseMixin(object):
 
 class User_Account(BaseMixin, db.Model):
     __tablename__ = "user_account"
-    id = db.Column(db.Integer, primary_key=True, unique=True)
+    id = db.Column(db.Integer(), primary_key=True, unique=True)
+    user_name = db.Column(db.String())
 
     def __repr__(self):
         return "<User_Account %r>" % self.__dict__
