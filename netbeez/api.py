@@ -8,7 +8,7 @@ from flask_cors import CORS
 from . import models, exceptions, utils
 
 app = Flask(__name__)
-CORS(app, expose_headers=["X-Authentication-JWT"])
+CORS(app, resources={r"/*": {"origins": "*"}}, expose_headers=["X-Authentication-JWT"])
 socketio = SocketIO(app)
 api = Api(app, title="NetBeez Application API")
 
