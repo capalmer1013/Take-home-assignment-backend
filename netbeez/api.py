@@ -53,7 +53,10 @@ class UserDetailsEndpoints(Resource):
 
             result[each.key]["x"].append(each.timestamp)
             result[each.key]["y"].append(each.value)
-        return [{"label": each, "x": result[each]["x"], "y": result[each]["y"]} for each in result]
+        return [
+            {"label": each, "x": result[each]["x"], "y": result[each]["y"]}
+            for each in result
+        ]
 
 
 @api.route("/users/<userid>/<sensor_type>")
@@ -67,7 +70,10 @@ class UserDetailsEndpoints(Resource):
 
             result[each.key]["x"].append(each.timestamp)
             result[each.key]["y"].append(each.value)
-        return [{"label": each, "x": result[each]["x"], "y": result[each]["y"]} for each in result]
+        return [
+            {"label": each, "x": result[each]["x"], "y": result[each]["y"]}
+            for each in result
+        ]
 
 
 # socketio stuff
@@ -133,7 +139,6 @@ def handle_data(message):
         print("invalid id", message["id"])
         valid_request = False
 
-
     if not valid_request:
         raise exceptions.BadRequestError(
             error="Must have id, sensor_type, sensor_name, value fields."
@@ -154,6 +159,7 @@ def handle_data(message):
         room=message["id"],
     )
     print("success")
+
 
 if __name__ == "__main__":
     socketio.run(app)
