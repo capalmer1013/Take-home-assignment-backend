@@ -17,6 +17,7 @@ eventlet = "*"
 black = "*"
 pytest = "*"
 flask-restplus = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.6"
