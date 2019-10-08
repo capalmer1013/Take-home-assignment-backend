@@ -21,7 +21,7 @@ class TestSocketIO(BaseTest):
         # create user
         with app.app_context():
             user = models.User_Account.create()
-            print(user.id)
+        print(user.id)
         # send a value for them
         # make sure it gets set
         values = {"id", "sensor_type", "sensor_name", "value"}
