@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, render_template
 from flask_restplus import Resource, Api, fields, reqparse
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
@@ -114,11 +116,21 @@ def handle_data(message):
         raise exceptions.BadRequestError(
             error="Must have id, sensor_type, sensor_name, value fields."
         )
-
+    timestamp = time.time()
     models.Data_Stream.create(
-        user_id=message["id"], key=message["sensor_type"], value=message["value"]
+        user_id=message["id"],
+        key=message["sensor_type"],
+        value=message["value"],
+        timestamp=timestamp,
     )
-    send({"key": message["sensor_type"], "value": message["value"]}, room=message["id"])
+    send(
+        {
+            "key": message["sensor_type"],
+            "value": message["value"],
+            "timestamp": timestamp,
+        },
+        room=message["id"],
+    )
 
 
 if __name__ == "__main__":

@@ -52,3 +52,4 @@ class Data_Stream(BaseMixin, db.Model):
     user = db.relationship("User_Account", foreign_keys=[user_id], lazy="joined")
     key = db.Column(db.String(), nullable=False)
     value = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.Float, nullable=False)
