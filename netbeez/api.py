@@ -53,7 +53,20 @@ class UserDetailsEndpoints(Resource):
 
             result[each.key]["x"].append(each.timestamp)
             result[each.key]["y"].append(each.value)
+        return [{"label": each, "x": result[each]["x"], "y": result[each]["y"]} for each in result]
 
+
+@api.route("/users/<userid>/<sensor_type>")
+class UserDetailsEndpoints(Resource):
+    def get(self, userid, sensor_type):
+        result = {}
+        q = models.Data_Stream.query.filter_by(user_id=userid, key=sensor_type).all()
+        for each in q:
+            if each.key not in result:
+                result[each.key] = {"x": [], "y": []}
+
+            result[each.key]["x"].append(each.timestamp)
+            result[each.key]["y"].append(each.value)
         return [{"label": each, "x": result[each]["x"], "y": result[each]["y"]} for each in result]
 
 
@@ -82,12 +95,13 @@ def on_leave(data):
 
 @socketio.on_error_default
 def error_handler(e):
-    # print("An error has occurred: " + str(e))
+    print("An error has occurred: " + str(e))
     send({"error": e.error})
 
 
 @socketio.on("json")
 def handle_data(message):
+    print(message)
     expectedFields = ["id", "sensor_type", "sensor_name", "value"]
     sensor_types = [
         "electricity_w",
@@ -100,25 +114,25 @@ def handle_data(message):
         "electricity_w": float,
         "motion_bool": bool,
         "smoke_bool": bool,
-        "CO2_ppm": float,
+        "CO2_ppm": int,
     }
     valid_request = True
     for key in expectedFields:
         if key not in message:
+            print("missing key", key)
             valid_request = False
 
     if valid_request and message["sensor_type"] not in sensor_types:
+        print("invalid sensor type", message["sensor_type"])
         valid_request = False
 
-    if valid_request and not isinstance(
-        message["value"], sensor_value_types[message["sensor_type"]]
-    ):
-        valid_request = False
     if (
         valid_request
         and not models.User_Account.query.filter_by(id=message["id"]).first()
     ):
+        print("invalid id", message["id"])
         valid_request = False
+
 
     if not valid_request:
         raise exceptions.BadRequestError(
@@ -139,7 +153,7 @@ def handle_data(message):
         },
         room=message["id"],
     )
-
+    print("success")
 
 if __name__ == "__main__":
     socketio.run(app)

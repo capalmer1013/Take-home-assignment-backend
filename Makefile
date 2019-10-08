@@ -26,7 +26,7 @@ lint:
 	pipenv run black ./netbeez ./tests
 
 local-server:
-	pipenv run gunicorn netbeez:app --bind 0.0.0.0:8000
+	pipenv run gunicorn --worker-class eventlet -w 1 netbeez:app --bind 0.0.0.0:8000
 
 tests:
 	pipenv run black --check ./netbeez ./tests
