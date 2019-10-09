@@ -4,4 +4,7 @@ Backend for NetBeez assignment
 
 - create db
 - set db env variable
-- run `make db-upgrade`
+- `make db-upgrade`
+- `pipenv install`
+- `make tests`
+- `make local-server`
