@@ -97,10 +97,12 @@ class UserDetailsEndpoints(Resource):
                 "current": max(
                     electricityList, key=lambda x: x["timestamp"], default={"value": 0}
                 )["value"],
-                "15m": sum([float(x["value"]) for x in electricityList_15m]) / len(electricityList_15m)
+                "15m": sum([float(x["value"]) for x in electricityList_15m])
+                / len(electricityList_15m)
                 if len(electricityList_15m) > 0
                 else None,
-                "60m": sum([float(x["value"]) for x in electricityList_60m]) / len(electricityList_60m)
+                "60m": sum([float(x["value"]) for x in electricityList_60m])
+                / len(electricityList_60m)
                 if len(electricityList_60m) > 0
                 else None,
             },
@@ -108,10 +110,12 @@ class UserDetailsEndpoints(Resource):
                 "current": max(
                     temperatureList, key=lambda x: x["timestamp"], default={"value": 0}
                 )["value"],
-                "15m": sum([float(x["value"]) for x in temperatureList_15m]) / len(temperatureList_15m)
+                "15m": sum([float(x["value"]) for x in temperatureList_15m])
+                / len(temperatureList_15m)
                 if len(temperatureList_15m) > 0
                 else None,
-                "60m": sum([float(x["value"]) for x in temperatureList_60m]) / len(temperatureList_60m)
+                "60m": sum([float(x["value"]) for x in temperatureList_60m])
+                / len(temperatureList_60m)
                 if len(temperatureList_60m) > 0
                 else None,
             },
@@ -231,14 +235,25 @@ def handle_data(message):
         value=message["value"],
         timestamp=timestamp,
     )
-    send(
+    emit(
+        "live",
         {
             "key": message["sensor_type"],
             "value": message["value"],
             "timestamp": timestamp,
         },
-        room=message["id"],
+        broadcast=True,
+        include_self=False,
     )
+    # emit(
+    #     "live",
+    #     {
+    #         "key": message["sensor_type"],
+    #         "value": message["value"],
+    #         "timestamp": timestamp,
+    #     },
+    #     room=message["id"],
+    # )
     print("success")
 
 
