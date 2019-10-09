@@ -213,6 +213,9 @@ def handle_data(message):
             print("missing key", key)
             valid_request = False
 
+    if message["sensor_type"] == "motion_bool" or message["sensor_type"] == "smoke_bool":
+        message["value"] = bool(message["value"])
+
     if valid_request and message["sensor_type"] not in sensor_types:
         print("invalid sensor type", message["sensor_type"])
         valid_request = False
