@@ -45,18 +45,98 @@ class UsersEndpoints(Resource):
 @api.route("/users/<userid>")
 class UserDetailsEndpoints(Resource):
     def get(self, userid):
-        result = {}
         q = models.Data_Stream.query.filter_by(user_id=userid).all()
+        dataStream = []
         for each in q:
-            if each.key not in result:
-                result[each.key] = {"x": [], "y": []}
+            dataStream.append(
+                {
+                    "sensor_type": each.key,
+                    "value": each.value,
+                    "timestamp": each.timestamp,
+                }
+            )
 
-            result[each.key]["x"].append(each.timestamp)
-            result[each.key]["y"].append(each.value)
-        return [
-            {"label": each, "x": result[each]["x"], "y": result[each]["y"]}
-            for each in result
-        ]
+        dataStream.sort(key=lambda x: x["timestamp"])
+        current_time = time.time()
+        electricityList = list(
+            filter(lambda x: x["sensor_type"] == "electricity_w", dataStream)
+        )
+        electricityList_15m = list(
+            filter(lambda x: current_time - x["timestamp"] < 900.0, electricityList)
+        )
+        electricityList_60m = list(
+            filter(lambda x: current_time - x["timestamp"] < 3600.0, electricityList)
+        )
+
+        temperatureList = list(
+            filter(lambda x: x["sensor_type"] == "temperature_f", dataStream)
+        )
+        temperatureList_15m = list(
+            filter(lambda x: current_time - x["timestamp"] < 900.0, temperatureList)
+        )
+        temperatureList_60m = list(
+            filter(lambda x: current_time - x["timestamp"] < 3600.0, temperatureList)
+        )
+
+        motionList = list(
+            filter(lambda x: x["sensor_type"] == "motion_bool", dataStream)
+        )
+        smokeList = list(filter(lambda x: x["sensor_type"] == "smoke_bool", dataStream))
+
+        CO2List = list(filter(lambda x: x["sensor_type"] == "CO2_ppm", dataStream))
+        CO2List_15m = list(
+            filter(lambda x: current_time - x["timestamp"] < 900.0, CO2List)
+        )
+        CO2List_60m = list(
+            filter(lambda x: current_time - x["timestamp"] < 3600.0, CO2List)
+        )
+        print(CO2List_15m)
+        print(len(CO2List_15m) > 0)
+        return {
+            "electricity_w": {
+                "current": max(
+                    electricityList, key=lambda x: x["timestamp"], default={"value": 0}
+                )["value"],
+                "15m": sum([float(x["value"]) for x in electricityList_15m]) / len(electricityList_15m)
+                if len(electricityList_15m) > 0
+                else None,
+                "60m": sum([float(x["value"]) for x in electricityList_60m]) / len(electricityList_60m)
+                if len(electricityList_60m) > 0
+                else None,
+            },
+            "temperature_f": {
+                "current": max(
+                    temperatureList, key=lambda x: x["timestamp"], default={"value": 0}
+                )["value"],
+                "15m": sum([float(x["value"]) for x in temperatureList_15m]) / len(temperatureList_15m)
+                if len(temperatureList_15m) > 0
+                else None,
+                "60m": sum([float(x["value"]) for x in temperatureList_60m]) / len(temperatureList_60m)
+                if len(temperatureList_60m) > 0
+                else None,
+            },
+            "motion_bool": {
+                "current": max(
+                    motionList, key=lambda x: x["timestamp"], default={"value": False}
+                )["value"]
+            },
+            "smoke_bool": {
+                "current": max(
+                    smokeList, key=lambda x: x["timestamp"], default={"value": False}
+                )["value"]
+            },
+            "CO2_ppm": {
+                "current": max(
+                    CO2List, key=lambda x: x["timestamp"], default={"value": 0}
+                )["value"],
+                "15m": sum([float(x["value"]) for x in CO2List_15m]) / len(CO2List_15m)
+                if len(CO2List_15m) > 0
+                else None,
+                "60m": sum([float(x["value"]) for x in CO2List_60m]) / len(CO2List_60m)
+                if len(CO2List_60m) > 0
+                else None,
+            },
+        }
 
 
 @api.route("/users/<userid>/<sensor_type>")
@@ -91,7 +171,8 @@ def test_disconnect():
 
 @socketio.on("join")
 def on_join(data):
-    join_room(data["id"])
+    pass
+    # join_room(data["id"])
 
 
 @socketio.on("leave")
