@@ -46,6 +46,11 @@ class UsersEndpoints(Resource):
 class UserDetailsEndpoints(Resource):
     def get(self, userid):
         q = models.Data_Stream.query.filter_by(user_id=userid).all()
+        if len(q) > 1000:
+            for i in range(1000 - len(q)):
+                models.db.session.delete(q[i])
+            models.db.session.commit()
+
         dataStream = []
         for each in q:
             dataStream.append(
@@ -187,7 +192,7 @@ def on_leave(data):
 @socketio.on_error_default
 def error_handler(e):
     print("An error has occurred: " + str(e))
-    send({"error": e.error})
+    # send({"error": e.error})
 
 
 @socketio.on("json")
@@ -213,7 +218,10 @@ def handle_data(message):
             print("missing key", key)
             valid_request = False
 
-    if message["sensor_type"] == "motion_bool" or message["sensor_type"] == "smoke_bool":
+    if (
+        message["sensor_type"] == "motion_bool"
+        or message["sensor_type"] == "smoke_bool"
+    ):
         message["value"] = bool(message["value"])
 
     if valid_request and message["sensor_type"] not in sensor_types:
