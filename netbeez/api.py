@@ -46,10 +46,6 @@ class UsersEndpoints(Resource):
 class UserDetailsEndpoints(Resource):
     def get(self, userid):
         q = models.Data_Stream.query.filter_by(user_id=userid).all()
-        if len(q) > 1000:
-            for i in range(1000 - len(q)):
-                models.db.session.delete(q[i])
-            models.db.session.commit()
 
         dataStream = []
         for each in q:
